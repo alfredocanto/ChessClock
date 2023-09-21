@@ -29,17 +29,13 @@ export default function Clock() {
   ];
   const [gameStarted, setGameStarted] = useState(false)
   const [gameOver, setGameOver] = useState(false)
-
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [selectedPreset, setSelectedPreset] = useState(presetTimes[7]); // Default preset
-
   const [lastRunningClock, setLastRunningClock] = useState(null);
-
   const [showResetModal, setShowResetModal] = useState(false);
-
   const [gamePaused, setGamePaused] = useState(false);
-
   const [sound, setSound] = useState(true);
+
 
   const [clock1, setClock1] = useState({
     initialTime: presetTimes[7].time,
@@ -48,7 +44,6 @@ export default function Clock() {
     moves: 0,
     increment: presetTimes[7].increment,
   })
-
   const [clock2, setClock2] = useState({
     initialTime: presetTimes[7].time,
     currentTime: presetTimes[7].time,
@@ -218,6 +213,7 @@ export default function Clock() {
   }
 
 
+
   return (
     <>
       <div onClick={() => toggleActiveClock(2)} className={`clock-container ${clock1.isRunning ? 'running' : ''} ${gameOver && clock1.currentTime === 0 ? 'rot' : ''} reversed`}>
@@ -242,46 +238,46 @@ export default function Clock() {
 
 
 
-
-
-
-
-
-      {isSettingsOpen && (
-        <div className="settings" onClick={closeSettings}>
-          <div className="settings-content" onClick={(e) => e.stopPropagation()}>
-            <h2>Time Controls</h2>
-            <div className="preset-buttons">
-              {presetTimes.map((preset) => (
-                <button
-                  key={preset.label}
-                  className={preset === selectedPreset ? 'selected-preset' : ''}
-                  onClick={() => handleSelectedPreset(preset)}
-                >
-                  {preset.label}
-                </button>
-              ))}
-            </div>
-            <div className="settings-buttons">
-              <button onClick={handleSaveSettings}>Save</button>
-              <button onClick={closeSettings}>Cancel</button>
+      {/* Dual settings modal*/}
+      {
+        isSettingsOpen && (
+          <div className="settings" onClick={closeSettings}>
+            <div className="settings-content" onClick={(e) => e.stopPropagation()}>
+              <h2>Time Controls</h2>
+              <div className="preset-buttons">
+                {presetTimes.map((preset) => (
+                  <button
+                    key={preset.label}
+                    className={preset === selectedPreset ? 'selected-preset' : ''}
+                    onClick={() => handleSelectedPreset(preset)}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+              <div className="settings-buttons">
+                <button onClick={handleSaveSettings}>Save</button>
+                <button onClick={closeSettings}>Cancel</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* Reset Confirmation Modal */}
-      {showResetModal && (
-        <div className="reset-modal">
-          <div className="reset-modal-content">
-            <p>Reset Clock</p>
-            <div className="reset-modal-buttons">
-              <button className="confirm" onClick={resetGame}>Confirm</button>
-              <button className="cancel" onClick={closeResetModal}>Cancel</button>
+      {
+        showResetModal && (
+          <div className="reset-modal">
+            <div className="reset-modal-content">
+              <p>Reset Clock</p>
+              <div className="reset-modal-buttons">
+                <button className="confirm" onClick={resetGame}>Confirm</button>
+                <button className="cancel" onClick={closeResetModal}>Cancel</button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
     </>
   )
