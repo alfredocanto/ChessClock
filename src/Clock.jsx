@@ -1,32 +1,26 @@
 import React, { useEffect } from 'react'
 import { useState } from 'react'
-import { FaPause } from 'react-icons/fa'
-import { FaClock } from 'react-icons/fa'
-import { FaVolumeUp } from 'react-icons/fa'
-import { FaUndo } from 'react-icons/fa'
-import { FaSliders } from 'react-icons/fa6'
-import { FaPlay } from 'react-icons/fa6'
-import { FaVolumeXmark } from 'react-icons/fa6'
 import pauseGameSound from './assets/pauseGame.wav'
 import resetGameSound from './assets/resetGame.wav'
 import tacSound from './assets/tacSound.wav'
 import runOutOfTime from './assets/runOutOfTime.wav'
+import { presetTimes } from './config';
+import ClockDisplay from './components/ClockDisplay'
 import './Clock.css'
+import {
+  FaPause,
+  FaClock,
+  FaVolumeUp,
+  FaUndo,
+} from 'react-icons/fa'
+import {
+  FaPlay,
+  FaVolumeXmark,
+} from 'react-icons/fa6'
+
 
 export default function Clock() {
-  const presetTimes = [
-    { label: '1m', time: 600, increment: 0 },
-    { label: '1m | 1s', time: 600, increment: 10 },
-    { label: '2m | 1s', time: 1200, increment: 10 },
-    { label: '3m', time: 1800, increment: 0 },
-    { label: '3m | 2s', time: 1800, increment: 20 },
-    { label: '5m', time: 3000, increment: 0 },
-    { label: '5m | 5s', time: 3000, increment: 50 },
-    { label: '10m', time: 6000, increment: 0 },
-    { label: '15m | 10s', time: 9000, increment: 100 },
-    { label: '20m', time: 12000, increment: 0 },
-    { label: '30m', time: 18000, increment: 0 },
-  ];
+
   const [gameStarted, setGameStarted] = useState(false)
   const [gameOver, setGameOver] = useState(false)
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -36,22 +30,16 @@ export default function Clock() {
   const [gamePaused, setGamePaused] = useState(false);
   const [sound, setSound] = useState(true);
 
-
-  const [clock1, setClock1] = useState({
-    initialTime: presetTimes[7].time,
-    currentTime: presetTimes[7].time,
+  const initializeClock = () => ({
+    initialTime: selectedPreset.time,
+    currentTime: selectedPreset.time,
     isRunning: false,
     moves: 0,
-    increment: presetTimes[7].increment,
-  })
-  const [clock2, setClock2] = useState({
-    initialTime: presetTimes[7].time,
-    currentTime: presetTimes[7].time,
-    isRunning: false,
-    moves: 0,
-    increment: presetTimes[7].increment,
-  })
+    increment: selectedPreset.increment,
+  });
 
+  const [clock1, setClock1] = useState(initializeClock());
+  const [clock2, setClock2] = useState(initializeClock());
 
   const toggleActiveClock = (clock) => {
     if (!gameOver) {
@@ -212,32 +200,29 @@ export default function Clock() {
     setSound(!sound);
   }
 
-
-
   return (
     <>
-      <div onClick={() => toggleActiveClock(2)} className={`clock-container ${clock1.isRunning ? 'running' : ''} ${gameOver && clock1.currentTime === 0 ? 'rot' : ''} reversed`}>
-        <p className="clock-moves">Moves: {clock1.moves}</p>
-        <h1 className="clock-timer">{formatTime(clock1.currentTime)}</h1>
-        {!gameStarted && <FaSliders className="clock-settings" />}
-      </div>
-
+      <ClockDisplay
+        clock={clock1}
+        onClick={() => toggleActiveClock(2)}
+        gameStarted={gameStarted}
+        gameOver={gameOver}
+        formatTime={formatTime}
+        isUpsideDown
+      />
       <div className="controls">
         <FaUndo onClick={openResetModal} className="reset" />
         {gamePaused ? <FaPlay onClick={pauseGame} className="pause" /> : <FaPause onClick={pauseGame} className="pause" />}
         <FaClock onClick={openSettings} className="time-control" />
         {sound ? <FaVolumeUp onClick={toggleSound} className="sound" /> : <FaVolumeXmark onClick={toggleSound} className="sound" />}
       </div>
-
-      <div onClick={() => toggleActiveClock(1)} className={`clock-container ${clock2.isRunning ? 'running' : ''} ${gameOver && clock2.currentTime === 0 ? 'rot' : ''}`}>
-        <p className="clock-moves">Moves: {clock2.moves}</p>
-        <h1 className="clock-timer">{formatTime(clock2.currentTime)}</h1>
-        {!gameStarted && <FaSliders className="clock-settings" />}
-      </div>
-
-
-
-
+      <ClockDisplay
+        clock={clock2}
+        onClick={() => toggleActiveClock(1)}
+        gameStarted={gameStarted}
+        gameOver={gameOver}
+        formatTime={formatTime}
+      />
       {/* Dual settings modal*/}
       {
         isSettingsOpen && (
@@ -263,7 +248,6 @@ export default function Clock() {
           </div>
         )
       }
-
       {/* Reset Confirmation Modal */}
       {
         showResetModal && (
@@ -278,7 +262,6 @@ export default function Clock() {
           </div>
         )
       }
-
     </>
   )
 }
